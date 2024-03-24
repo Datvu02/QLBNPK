@@ -39,21 +39,41 @@ class AuthController extends Controller
     // Xử lý yêu cầu đăng ký
     public function register(Request $request)
     {
-        $request->validate([
+        // Validate incoming request
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'address' => 'required|string|max:255',
+            'gender' => 'required|string|max:255|in:male,female,other',
+            'birth_date' => 'required|date',
+            'id_card' => 'required|string|max:255',
+            'role' => 'required|string|in:doctor,staff,patient',
+            'occupation' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:255',
+            'agree' => 'required',
+            // Add validation rules for other fields
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        // Create new user
+        $user = new User();
+        $user->name = $validatedData['name'];
+        $user->email = $validatedData['email'];
+        $user->password = Hash::make($validatedData['password']);
+        $user->address = $validatedData['address'];
+        $user->gender = $validatedData['gender'];
+        $user->birth_date = $validatedData['birth_date'];
+        $user->id_card = $validatedData['id_card'];
+        $user->role = $validatedData['role'];
+        $user->occupation = $validatedData['occupation'];
+        $user->phone_number = $validatedData['phone_number'];
+        $user->certificate = $request->input('certificate'); // This field might be empty
+        $user->specialization = $request->input('specialization'); // This field might be empty
 
-        // Thực hiện đăng nhập ngay sau khi đăng ký (tuỳ chọn)
-        // Auth::login($user);
+        $user->save();
 
-        return redirect('/login')->with('success', 'Your account has been registered. You can now log in.');
+        // You may perform additional actions after user registration, such as sending email verification, etc.
+
+        return redirect()->route('login')->with('success', 'Registration successful. Please login.');
     }
 }

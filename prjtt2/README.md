@@ -74,6 +74,4 @@ b4: mở terminal và chạy các lệnh sau:
     composer install
     php artisan key:generate
     php artisan migrate --seed
-    composer require laravel/ui
-    php artisan ui vue --auth
     php artisan serve
